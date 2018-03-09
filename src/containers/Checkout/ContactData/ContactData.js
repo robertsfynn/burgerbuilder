@@ -98,7 +98,7 @@ class ContactData extends Component {
         this.props.onOrderBurger(order);
     }
 
-    checkVadility = (value, rules) => {
+    checkValidity = (value, rules) => {
         let isValid = true;
 
         if (!rules) {
@@ -127,7 +127,7 @@ class ContactData extends Component {
             ...updatedOrderForm[inputIdentifier]
         }
         updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkVadility(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
         updatedFormElement.touched = true;
         updatedOrderForm[inputIdentifier] = updatedFormElement;
 
