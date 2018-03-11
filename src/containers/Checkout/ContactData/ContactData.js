@@ -8,6 +8,7 @@ import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import * as actionsTypes from '../../../store/actions/index';
+import { checkValidity } from '../../../store/utility';
 
 class ContactData extends Component {
 
@@ -30,21 +31,21 @@ class ContactData extends Component {
             name: {
                 ...this.formOrderObjects('Your Name'),
                 validation: {
-                    requiered: true
+                    required: true
                 },
                 valid: false
             },
             street: {
                 ...this.formOrderObjects('Your Street'),
                 validation: {
-                    requiered: true
+                    required: true
                 },
                 valid: false
             },
             zip: {
                 ...this.formOrderObjects('ZIP Code'),
                 validation: {
-                    requiered: true,
+                    required: true,
                     maxLength: 5,
                     minLength: 5
                 },
@@ -53,14 +54,14 @@ class ContactData extends Component {
             country: {
                 ...this.formOrderObjects('Country'),
                 validation: {
-                    requiered: true
+                    required: true
                 },
                 valid: false
             },
             email: {
                 ...this.formOrderObjects('Your Mail'),
                 validation: {
-                    requiered: true
+                    required: true
                 },
                 valid: false
             },
@@ -92,33 +93,14 @@ class ContactData extends Component {
         const order = {
             ingredients: this.props.ings,
             price: this.props.price,
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         }
 
-        this.props.onOrderBurger(order);
+        this.props.onOrderBurger(order, this.props.token);
     }
 
-    checkValidity = (value, rules) => {
-        let isValid = true;
-
-        if (!rules) {
-            return true;
-        }
-
-        if (rules.requiered) {
-            isValid = value.trim() !== '' && isValid;
-        }
-
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid;
-        }
-        if (rules.maxLength) {
-            isValid = value.length <= rules.maxLength && isValid;
-        }
-
-        return isValid;
-    }
-
+    
     inputChangedHandler = (event, inputIdentifier) => {
         const updatedOrderForm = {
             ...this.state.orderForm
@@ -127,7 +109,7 @@ class ContactData extends Component {
             ...updatedOrderForm[inputIdentifier]
         }
         updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.valid = checkValidity(updatedFormElement.value, updatedFormElement.validation);
         updatedFormElement.touched = true;
         updatedOrderForm[inputIdentifier] = updatedFormElement;
 
@@ -183,13 +165,15 @@ const mapStateToProps = state => {
     return {
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
-        loading: state.order.loading
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onOrderBurger: (orderData) => dispatch(actionsTypes.purchaseBurger(orderData))
+        onOrderBurger: (orderData, token) => dispatch(actionsTypes.purchaseBurger(orderData, token))
     }
 }
 
